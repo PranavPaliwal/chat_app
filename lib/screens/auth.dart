@@ -1,6 +1,9 @@
 // Importing the necessary package for Flutter
 
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+final _firebase=FirebaseAuth.instance;
 
 // Defining a Stateful Widget called AuthScreen
 class AuthScreen extends StatefulWidget {
@@ -28,17 +31,35 @@ class _AuthScreenState extends State<AuthScreen> {
   var _isLogin = true;
 
   // Function to handle form submission
-  void _submit() {
+  void _submit() async {
 
     // Check if the form is valid
     final isValid = _form.currentState!.validate();
 
-    // If the form is valid, save the form data and print the entered email and password
-    if (isValid) {
-      _form.currentState!.save();
-      print(_enteredEmail);
-      print(_enteredPassword);
+    if(!isValid){
+      return;
     }
+
+      _form.currentState!.save();
+      
+
+      if(_isLogin){
+          // login User...
+      } else {
+        try{
+             final UserCredential = await _firebase.createUserWithEmailAndPassword(
+          email: _enteredEmail, password: _enteredPassword 
+          );
+          print(UserCredential);
+        }
+        on FirebaseAuthException catch(error){
+            if(error.code=='email-already-in-use'){
+
+            }
+            ScaffoldMessenger.of(context).clearSnackBars();
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.message ?? 'Authentication Failed'),),);
+      }
+  }
   }
 
   // Building the UI for the AuthScreen
