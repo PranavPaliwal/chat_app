@@ -1,6 +1,6 @@
 // Importing the necessary package for Flutter
 import 'dart:io';
-import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:chat_app/widgets/user_image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -33,7 +33,9 @@ class _AuthScreenState extends State<AuthScreen> {
   // Variable to toggle between login and signup modes
   var _isLogin = true;
 
+
   File? _selectedImage;
+  var _isAuthenticating=false;
 
   // Function to handle form submission
   void _submit() async {
@@ -41,14 +43,26 @@ class _AuthScreenState extends State<AuthScreen> {
     // Check if the form is valid
     final isValid = _form.currentState!.validate();
 
-    if(!isValid || !_isLogin && _selectedImage==null){
-      return;
-    }
+    if (!isValid) {
+    return;
+  }
+
+  if (!_isLogin && _selectedImage == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Please select an image for your profile'),
+      ),
+    );
+    return;
+  }
     
       _form.currentState!.save();
       
     try{
       if(_isLogin){
+        setState(() {
+          _isAuthenticating=true;
+        });
           final UserCredential=await _firebase.signInWithEmailAndPassword(
             email: _enteredEmail, password: _enteredPassword
             );
@@ -58,14 +72,22 @@ class _AuthScreenState extends State<AuthScreen> {
           );      
 
           final storageRef= FirebaseStorage.instance
-          .ref().
-          child('user_images').
-          child('${UserCredential.user!.uid}.jpg'
+          .ref()
+          .child('user_images')
+          .child('${UserCredential.user!.uid}.jpg'
           );
 
           await storageRef.putFile(_selectedImage!);
           final imageUrl=await storageRef.getDownloadURL();
-          print(imageUrl);
+
+          await FirebaseFirestore.instance
+          .collection('user')
+          .doc(UserCredential.user!.uid)
+          .set({
+            'username': 'to be done...',
+            'email': _enteredEmail,
+            'imageUrl': imageUrl,
+          });
       }
       }
         on FirebaseAuthException catch(error){
@@ -73,7 +95,15 @@ class _AuthScreenState extends State<AuthScreen> {
 
             }
             ScaffoldMessenger.of(context).clearSnackBars();
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.message ?? 'Authentication Failed'),),);
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text(
+                error.message ?? 'Authentication Failed'
+              ),
+            ),
+          );
+          setState(() {
+            _isAuthenticating=false;
+          });
   }
   }
 
@@ -165,8 +195,10 @@ class _AuthScreenState extends State<AuthScreen> {
                             },
                           ),
                           const SizedBox(height: 12),
-
-                          // Creating an ElevatedButton for form submission
+                          if(_isAuthenticating)
+                            const CircularProgressIndicator(),
+                          
+                          if(!_isAuthenticating)
                           ElevatedButton(
                             onPressed: _submit,
                             style: ElevatedButton.styleFrom(
@@ -175,7 +207,7 @@ class _AuthScreenState extends State<AuthScreen> {
                             child: Text(_isLogin ? 'Login' : 'SignUp'),
                           ),
                           
-                          // Creating a TextButton to toggle between login and signup modes
+                          if(!_isAuthenticating)
                           TextButton(
                             onPressed: () {
                               setState(() {
