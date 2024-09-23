@@ -1,5 +1,6 @@
 // Importing the necessary package for Flutter
-
+import 'dart:io';
+import 'package:chat_app/widgets/user_image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -29,6 +30,8 @@ class _AuthScreenState extends State<AuthScreen> {
 
   // Variable to toggle between login and signup modes
   var _isLogin = true;
+
+  File? selectedImage;
 
   // Function to handle form submission
   void _submit() async {
@@ -99,6 +102,11 @@ class _AuthScreenState extends State<AuthScreen> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                          if(!_isLogin)
+                          userImagePicker(
+                            onPickedImage:(pickedImage) {
+                            selectedImage=pickedImage;
+                          },),
 
                           // Creating a TextFormField for email
                           TextFormField(
