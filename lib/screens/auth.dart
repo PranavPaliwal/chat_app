@@ -1,8 +1,10 @@
 // Importing the necessary package for Flutter
 import 'dart:io';
+import 'dart:io';
 import 'package:chat_app/widgets/user_image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 final _firebase=FirebaseAuth.instance;
 
@@ -31,7 +33,7 @@ class _AuthScreenState extends State<AuthScreen> {
   // Variable to toggle between login and signup modes
   var _isLogin = true;
 
-  File? selectedImage;
+  File? _selectedImage;
 
   // Function to handle form submission
   void _submit() async {
@@ -39,9 +41,10 @@ class _AuthScreenState extends State<AuthScreen> {
     // Check if the form is valid
     final isValid = _form.currentState!.validate();
 
-    if(!isValid){
+    if(!isValid || !_isLogin && _selectedImage==null){
       return;
     }
+    
       _form.currentState!.save();
       
     try{
@@ -52,7 +55,17 @@ class _AuthScreenState extends State<AuthScreen> {
       } else {
              final UserCredential = await _firebase.createUserWithEmailAndPassword(
           email: _enteredEmail, password: _enteredPassword 
-          );        
+          );      
+
+          final storageRef= FirebaseStorage.instance
+          .ref().
+          child('user_images').
+          child('${UserCredential.user!.uid}.jpg'
+          );
+
+          await storageRef.putFile(_selectedImage!);
+          final imageUrl=await storageRef.getDownloadURL();
+          print(imageUrl);
       }
       }
         on FirebaseAuthException catch(error){
@@ -105,7 +118,7 @@ class _AuthScreenState extends State<AuthScreen> {
                           if(!_isLogin)
                           userImagePicker(
                             onPickedImage:(pickedImage) {
-                            selectedImage=pickedImage;
+                            _selectedImage=pickedImage;
                           },),
 
                           // Creating a TextFormField for email
