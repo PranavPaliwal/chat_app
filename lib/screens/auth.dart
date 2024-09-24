@@ -29,6 +29,7 @@ class _AuthScreenState extends State<AuthScreen> {
   // Variables to store the entered email and password
   var _enteredEmail = '';
   var _enteredPassword = '';
+  var _enteredUsername='';
 
   // Variable to toggle between login and signup modes
   var _isLogin = true;
@@ -84,7 +85,7 @@ class _AuthScreenState extends State<AuthScreen> {
           .collection('user')
           .doc(UserCredential.user!.uid)
           .set({
-            'username': 'to be done...',
+            'username': _enteredUsername,
             'email': _enteredEmail,
             'imageUrl': imageUrl,
           });
@@ -173,8 +174,23 @@ class _AuthScreenState extends State<AuthScreen> {
                               _enteredEmail = value!;
                             },
                           ),
-
+                          if(!_isLogin)
+                          TextFormField(
+                            decoration:
+                            const InputDecoration(labelText: "Username"),
+                            enableSuggestions: false,
+                            validator: (value){
+                              if(value==null||value.trim().isEmpty||value.trim().length<4){
+                                return 'Username must be 4 or more Characters!';
+                            }
+                            return null;
+                            },
+                            onSaved: (value) {
+                              _enteredUsername=value!;
+                            },
+                          ),
                           // Creating a TextFormField for password
+                        
                           TextFormField(
                             decoration: const InputDecoration(
                               labelText: 'Password',
@@ -188,7 +204,6 @@ class _AuthScreenState extends State<AuthScreen> {
                               }
                               return null;
                             },
-
                             // OnSave function to store the entered password
                             onSaved: (value) {
                               _enteredPassword = value!;
