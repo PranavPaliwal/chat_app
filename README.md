@@ -5,6 +5,8 @@
 Welcome to ChatApp, a messaging platform built with Flutter, Dart, and Firebase. This app demonstrates advanced techniques in real-time data synchronization and cross-platform development.
 
 ![WhatsApp Image 2024-09-21 at 18 54 52_c5a318a8](https://github.com/user-attachments/assets/af59b3bd-4270-4173-a9da-8091307cdfc7)
+![WhatsApp Image 2024-09-29 at 04 11 52_a0fdd3d8](https://github.com/user-attachments/assets/63f8c529-0f70-4cc1-b10e-ec96df23f50f)
+
 
 ## 🛠️ Getting Started
 
@@ -24,7 +26,7 @@ To dive into this project:
 ## 🏗️ Technologies Used
 
 - Flutter: For cross-platform UI development
-- Dart: Programming language used for Flutter app development
+- Dart: Programming language used for Flutter app development.
 - Firebase: Backend services including Authentication, Firestore, and Cloud Messaging
 - StreamBuilder: Efficiently updating UI with real-time data changes
 - REST API: Demonstrating integration with backend services
@@ -36,4 +38,3 @@ Feel free to reach out if you have suggestions or spot any!
 
 Thank You for Exploring 🙏
 Thank you for taking the time to examine ChatApp. I hope you find this project informative and useful for learning about mobile app development with Flutter and Firebase.
-
