@@ -11,7 +11,7 @@ Welcome to ChatApp, a messaging platform built with Flutter, Dart, and Firebase.
 To dive into this project:
 
 1. Clone the repository from my GitHub account.
-2. Run `flutter pub get` in your terminal to install dependencies.
+2. Run `flutter pub get` in your terminal to install dependencies
 3. Execute `flutter run` to launch the app on your device.
 
 ## 🚀 Features
